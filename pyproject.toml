@@ -1,0 +1,18 @@
+[project]
+name = "scraper-base-fedora"
+version = "0.1.0"
+description = "A base scraper project."
+requires-python = ">=3.12"
+dependencies = ["beautifulsoup4", "selenium"]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-cov"]
+lint = ["ruff", "pre-commit"]
+
+[tool.ruff]
+# Set the maximum line length to match black's default.
+line-length = 120
+# Set the target Python version to match your project.
+target-version = "py312"
+# Define the source directory for first-party import sorting.
+src = ["src"]

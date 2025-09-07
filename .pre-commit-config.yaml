@@ -1,0 +1,31 @@
+# .pre-commit-config.yaml
+repos:
+  # --- General Purpose Hooks ---
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: check-yaml
+        # Exclude files that might have Jinja2 templating, which can break YAML parsing
+        exclude: .*/(templates|kubernetes)/.*
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  # --- Secret Scanning ---
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.2
+    hooks:
+      - id: gitleaks
+        # You can add --verbose if you want more detailed output
+        # Use `gitleaks protect -v .` to generate a baseline if you have known "secrets"
+        # that are false positives, and commit the .gitleaks.toml file.
+
+  # --- Python Specific Hooks ---
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.2
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix] # Automatically fix what it can
+      # Run the formatter
+      - id: ruff-format
