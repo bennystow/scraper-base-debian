@@ -1,5 +1,5 @@
 [project]
-name = "scraper-base-fedora"
+name = "scraper-base-debian"
 version = "0.1.0"
 description = "A base scraper project."
 requires-python = ">=3.12"

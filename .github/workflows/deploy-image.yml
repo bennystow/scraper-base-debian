@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.12', '3.13']
+        python-version: ["3.12", "3.13"]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -63,16 +63,18 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          # Dynamically set ECR_REPOSITORY_NAME based on the branch
-          ECR_REPOSITORY: ${{ github.ref == 'refs/heads/main' && 'base-scraper/prod' || 'base-scraper/dev' }}
+          # Set a static ECR repository name as requested.
+          ECR_REPOSITORY: "base-scraper/debian"
           IMAGE_TAG: ${{ github.sha }} # Use the commit SHA as the image tag
         # The working-directory should point to where your Dockerfile is located
         # relative to the root of your repository after checkout.
         working-directory: ./ # Assumes Dockerfile is at the repository root
         run: |
           IMAGE_NAME="$ECR_REGISTRY/$ECR_REPOSITORY"
-          echo "Building and pushing image: $IMAGE_NAME with tags $IMAGE_TAG and latest"
-          docker build -t "$IMAGE_NAME:$IMAGE_TAG" -t "$IMAGE_NAME:latest" .
+          # Use 'latest' tag for the main branch and 'dev' for other branches to avoid conflicts.
+          FLOATING_TAG=$(if [ "${{ github.ref_name }}" = "main" ]; then echo "latest"; else echo "dev"; fi)
+          echo "Building and pushing image: $IMAGE_NAME with tags $IMAGE_TAG and $FLOATING_TAG"
+          docker build -t "$IMAGE_NAME:$IMAGE_TAG" -t "$IMAGE_NAME:$FLOATING_TAG" .
           docker push "$IMAGE_NAME:$IMAGE_TAG"
-          docker push "$IMAGE_NAME:latest"
+          docker push "$IMAGE_NAME:$FLOATING_TAG"
           echo "Successfully pushed image: $IMAGE_NAME"

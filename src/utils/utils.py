@@ -17,14 +17,9 @@ def is_running_in_docker():
     return in_docker or in_ci
 
 
-def get_chrome_options(headless_override=None):
+def get_chrome_options():
     """
     Returns Chrome options suitable for the current environment (local or Docker).
-    Args:
-    headless_override (bool, optional): If True, forces headless mode.
-        If False, forces non-headless mode.
-        If None, determines headless based on environment.
-        Defaults to None.
     """
     chrome_options = Options()
     # Common options for both environments
@@ -32,7 +27,7 @@ def get_chrome_options(headless_override=None):
     chrome_options.add_argument("--log-level=3")  # Suppress console noise
     chrome_options.add_experimental_option("excludeSwitches", ["enable-logging"])  # Suppress DevTools messages
     # Determine headless mode
-    run_headless = headless_override if headless_override is not None else is_running_in_docker()
+    run_headless = is_running_in_docker()
 
     if run_headless:
         logger.info("Applying headless Chrome options.")
@@ -48,23 +43,21 @@ def get_chrome_options(headless_override=None):
         chrome_options.add_argument(f"--user-data-dir={mkdtemp()}")
         # Removed explicit --data-path and --disk-cache-dir as they are managed within user-data-dir.
         # Removed --remote-debugging-pipe as it's not typically needed for basic automation.
-        # Removed --verbose to reduce noise; can be re-added for deep debugging of Chrome.
-        # chrome_options.add_argument("--log-path=/tmp/chrome_debug.log") # Optional: for Chrome's own logs
-        chrome_options.binary_location = "/opt/chrome/chrome-linux64/chrome"
+        # The binary_location is no longer needed. Selenium will find the Chrome binary
+        # via the PATH or the standard symlink location (/usr/bin/google-chrome)
+        # created in the Dockerfile.
     else:
         logger.info("Applying non-headless Chrome options.")
 
     return chrome_options
 
 
-def get_chrome_service(headless_override=None):
-    if is_running_in_docker():
-        logger.info("SERVICE - Running in Docker environment")
-        return Service(
-            executable_path="/opt/chrome-driver/chromedriver-linux64/chromedriver",
-            service_log_path="/tmp/chromedriver.log",
-        )
-
-    else:
-        logger.info("SERVICE - Running in local environment")
-        return None
+def get_chrome_service():
+    """
+    Returns a Chrome Service object.
+    Relies on chromedriver being on the system's PATH, which is handled by the
+    Dockerfile for the container and should be handled by the user for local development.
+    """
+    logger.info("Initializing Chrome Service, which will find chromedriver on the system PATH.")
+    # By returning a default Service() object, we let Selenium manage finding the driver.
+    return Service()

@@ -2,6 +2,7 @@
 import json
 import sys  # Required for sys.stderr
 import logging
+import traceback
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from src.utils.utils import get_chrome_options, get_chrome_service, is_running_in_docker  # Import from utils
@@ -57,7 +58,7 @@ def scrape_h2_tags_from_webscraper_io():
 
     except Exception as e:
         # Log the original exception for details
-        logger.error(f"ERROR: An internal error occurred during the scraping process: {e}")
+        logger.error(f"ERROR: An internal error occurred during the scraping process: {traceback.format_exc()}")
         # Raise a new, more specific error that the caller can catch
         raise ScrapingError(f"Failed to scrape H2 tags due to an internal error: {e}") from e
     finally:

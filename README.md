@@ -1,6 +1,6 @@
-# Scraper Base Fedora
+# Scraper Base Debian
 
-This is a base project for a web scraper running on Fedora.
+This is a base project for a web scraper running on Debian.
 
 ## Getting Started
 
@@ -15,7 +15,7 @@ This is a base project for a web scraper running on Fedora.
 
     ```bash
     git clone <repository-url>
-    cd scraper-base-fedora
+    cd scraper-base-debian
     ```
 
 2.  Create a virtual environment and activate it:
@@ -41,10 +41,10 @@ python -m src.main
 1.  Build the Docker image:
 
     ```bash
-    docker build -t scraper-base-fedora .
+    docker build -t scraper-base-debian .
     ```
 
 2.  Run the Docker container:
     ```bash
-    docker run scraper-base-fedora
+    docker run scraper-base-debian
     ```

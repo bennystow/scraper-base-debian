@@ -26,3 +26,4 @@ lib64/
 sdist/
 *.egg-info/
 *.egg
+.ruff_cache
